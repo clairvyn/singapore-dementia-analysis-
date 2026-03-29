@@ -30,6 +30,8 @@ col3.metric("Avg PWDs per Facility", "619.9")
 
 geojson = gdf.__geo_interface__
 
+st.subheader("PWDs per Formal Care Facility by Planning Area")
+
 fig = px.choropleth_mapbox(
     data_frame=gdf,
     geojson=geojson,
@@ -44,12 +46,39 @@ fig = px.choropleth_mapbox(
     opacity=0.7,
     hover_name="PLN_AREA_N",
     hover_data={"PLN_AREA_N": False, "pwd_estimate": True, "facility_count": True, "pwd_per_facility": ":.0f"},
-    title="PWDs per Formal Care Facility by Planning Area",
     labels={"PLN_AREA_N":" ", "pwd_per_facility": "PWDs per Facility", "pwd_estimate": "PWDs (estimate)", "facility_count": "Facilities"},
 )
-
 st.plotly_chart(fig, use_container_width=True)
-st.subheader("Planning Areas by PWDs per Facility")
+
+st.subheader("Coverage Strain by Planning Area")
+st.write("Planning areas with formal care facilities, ranked by PWDs per facility. Reference line shows the national average of 619.9.")
+
+bar_df = gdf[gdf['facility_count'] > 0][['PLN_AREA_N', 'pwd_per_facility']].copy()
+bar_df = bar_df.sort_values('pwd_per_facility', ascending=True).reset_index(drop=True)
+
+bar_fig = px.bar(
+    bar_df,
+    x='pwd_per_facility',
+    y='PLN_AREA_N',
+    orientation='h',
+    labels={'PLN_AREA_N': 'Planning Area', 'pwd_per_facility': 'PWDs per Facility'},
+    color='pwd_per_facility',
+    color_continuous_scale='Reds',
+    height=700
+)
+
+bar_fig.add_vline(
+    x=619.9,
+    line_dash="dash",
+    line_color="black",
+    annotation_text="National average: 619.9",
+    annotation_position="top right"
+)
+
+bar_fig.update_layout(showlegend=False, coloraxis_showscale=False)
+
+st.plotly_chart(bar_fig, use_container_width=True)
+
 
 table_df = gdf[gdf['facility_count'] > 0][['PLN_AREA_N', 'pwd_estimate', 'facility_count', 'pwd_per_facility']].copy()
 table_df = table_df.sort_values('pwd_per_facility', ascending=False).reset_index(drop=True)
