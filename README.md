@@ -115,3 +115,30 @@ figure has been published.
 
 Python · pandas · GeoPandas · Plotly · Streamlit  
 Data: SingStat · data.gov.sg · AIC · OneMap API
+
+---
+
+## Area Intelligence Agent
+
+The second page of this app — **Area Intelligence Brief** — is powered by an 
+agentic AI layer built on the dementia burden data.
+
+Enter any of the 55 Singapore planning areas and the agent produces a 
+structured one-page brief with four sections:
+
+- **Demand Snapshot** — estimated persons with dementia (PWDs), facility 
+  count, and the PWDs-per-facility ratio for that area
+- **Care Infrastructure** — named facilities and geographic distribution
+- **Policy Context** — recent AIC/MOH policy and funding context retrieved 
+  via live web search
+- **Operational Implications** — synthesis and recommendations, each 
+  anchored to a named data point or policy item
+
+The agent uses the Claude API's tool use framework: a structured SQLite lookup 
+for burden data, and a Tavily web search for policy context. Every 
+recommendation in the brief cites its source — enforced in the system prompt, 
+not post-processing.
+
+The agent logic lives in `agent/` in this repo. Its source archive — including 
+the PRD, build sequence, and architecture documentation — is at 
+[jermaice/area-intelligence-agent](https://github.com/jermaice/area-intelligence-agent).
