@@ -2,3 +2,6 @@ streamlit
 geopandas
 plotly
 pandas
+anthropic
+tavily-python
+python-dotenv
