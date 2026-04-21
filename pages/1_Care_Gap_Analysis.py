@@ -54,6 +54,14 @@ fig = px.choropleth_mapbox(
 )
 st.plotly_chart(fig, use_container_width=True)
 
+st.markdown("""
+<div style="background-color: #f8f4f0; border-left: 4px solid #c0392b; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 6px 6px 0;">
+<p style="margin: 0 0 0.5rem 0; font-size: 0.95rem; line-height: 1.6; color: #2c2c2c;">Singapore's dementia burden is geographically concentrated.</p>
+<p style="margin: 0 0 0.5rem 0; font-size: 0.95rem; line-height: 1.6; color: #2c2c2c;">The ten highest-burden planning areas account for roughly half of all estimated PWDs nationally: Bedok, Tampines, Hougang, Ang Mo Kio, Bukit Merah, Jurong West, Toa Payoh, Yishun, Woodlands, and Sengkang.</p>
+<p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: #2c2c2c;">Most of them are the mature HDB towns built in the 1970s and 1980s, whose original resident populations have aged largely in place.</p>
+</div>
+""", unsafe_allow_html=True)
+
 st.subheader("Coverage Strain by Planning Area")
 st.write("Planning areas with formal care facilities, ranked by PWDs per facility. Reference line shows the national average of 619.9.")
 
@@ -88,21 +96,38 @@ table_df.columns = ['Planning Area', 'PWDs (estimate)', 'Facilities', 'PWDs per 
 table_df['PWDs per Facility'] = table_df['PWDs per Facility'].round(0).astype(int)
 st.dataframe(table_df, use_container_width=True, hide_index=True)
 
+st.markdown("""
+<div style="background-color: #f8f4f0; border-left: 4px solid #c0392b; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 6px 6px 0;">
+<p style="margin: 0 0 0.5rem 0; font-size: 0.95rem; line-height: 1.6; color: #2c2c2c;">Not all planning areas with facilities are equally covered.</p>
+<p style="margin: 0 0 0.5rem 0; font-size: 0.95rem; line-height: 1.6; color: #2c2c2c;">Bedok has 12, the most of any planning area, but also the highest estimated PWD population at 8,197, putting it at 683 per facility.</p>
+<p style="margin: 0; font-size: 0.95rem; line-height: 1.6; color: #2c2c2c;">Marine Parade tells the opposite story. One facility serving an estimated 1,573 PWDs, more than twice the national average strain.</p>
+</div>
+""", unsafe_allow_html=True)
+
 st.subheader("Planning Areas with No Formal Care Facility")
-st.write("These planning areas have an estimated PWD population but no formal dementia day care facility.")
 
 unserved_df = gdf[(gdf['facility_count'] == 0) & (gdf['pwd_estimate'] > 0)][['PLN_AREA_N', 'pwd_estimate']].copy()
 unserved_df = unserved_df.sort_values('pwd_estimate', ascending=False).reset_index(drop=True)
 unserved_df.columns = ['Planning Area', 'Est. PWDs']
 
 total_unserved = unserved_df['Est. PWDs'].sum()
-st.metric("Total PWDs in unserved planning areas", f"{total_unserved:,}")
+
+card1, card2, card3 = st.columns(3)
+
+with card1:
+    card1.metric("Total PWDs in unserved planning areas", f"{total_unserved:,}")
+
+with card2:
+    card2.metric("Populated planning areas with no formal dementia care presence", "15")
+
+with card3:
+    card3.metric("Most PWDs with no facility: Bukit Timah", "2,215")
 st.dataframe(unserved_df, use_container_width=True, hide_index=True)
 
-st.write("Planning areas without population and facilities are excluded (e.g. Tuas, Western Islands)")
+st.write("The remaining 13 planning areas without population and facilities are excluded. They are industrial zones, military land, or water catchment reserves (e.g. Tuas, Western Islands).")
 
 st.caption(" ")
-st.caption("PWD estimates are modelled from SingStat population data and WiSE 2023 prevalence rates, not direct counts.<br>PWD estimates based on SingStat resident population data (June 2024) and WiSE 2023 prevalence rates. Facility data from AIC Care Services locator (snapshot: 12 March 2026).", unsafe_allow_html=True)
+st.caption("PWD estimates are modelled, not direct counts. Estimates are derived from SingStat resident population data (June 2024) and WiSE 2023 prevalence rates.<br>Facility data from AIC Care Services (148 facilities, snapshot: 12 March 2026).<br>Planning area boundaries from URA Master Plan 2019 (data.gov.sg).", unsafe_allow_html=True)
 st.caption(" ")
 st.caption("Limitations: Facility counts reflect presence, not capacity. Informal care arrangements (e.g. foreign domestic workers) are not captured in public data. Geographic proximity does not guarantee access — cultural, financial, and informational barriers may also affect uptake.")
 
